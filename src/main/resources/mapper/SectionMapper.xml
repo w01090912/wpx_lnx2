@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 
+	namespace: 指定当前mapper.xml管理的接口 全限定名
+	注意：一个mapper.xml只能管理一个接口
+-->
+<mapper namespace="com.wpx.mapper.SectionMapper">
+    <sql id="base_common">
+      section_id,section_name
+    </sql>
+
+    <select id="selectAllEmpSection" resultType="com.wpx.pojo.EmpSection">
+        select
+        <include refid="base_common"/>
+        from emp_section
+    </select>
+
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(*) from emp_section
+    </select>
+
+    <select id="selectBySectionID" resultType="java.lang.String">
+        select section_id from emp_section where section_name=#{sectionName}
+    </select>
+
+    <insert id="insEmpSection" parameterType="com.wpx.pojo.EmpSection">
+        insert into user(section_id,section_name)
+        values(#{section_id,jdbcType=VARCHAR},#{section_name,jdbcType=VARCHAR})
+    </insert>
+
+
+    <delete id="delEmpSection" parameterType="java.lang.String">
+        delete from emp_section where id=#{id,jdbcType=VARCHAR}
+    </delete>
+
+
+</mapper>

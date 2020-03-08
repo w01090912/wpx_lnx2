@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 
+	namespace: 指定当前mapper.xml管理的接口 全限定名
+	注意：一个mapper.xml只能管理一个接口
+-->
+<mapper namespace="com.wpx.mapper.EmployeesMapper">
+    <sql id="commen_all">
+        emp_id  id,emp_name empName,emp_age empAge,emp_sex empSex,
+        emp_image empImage,emp_section empSection,emp_post empPost,status
+    </sql>
+    <resultMap id="EmpAndSection" type="com.wpx.pojo.Employees">
+        <id property="id" column="emp_id"/>
+        <result property="empName" column="emp_name"/>
+        <result property="empAge" column="emp_age"/>
+        <result property="empSex" column="emp_sex"/>
+        <result property="empImage" column="emp_image"/>
+        <result property="empSection" column="emp_section"/>
+        <result property="empPost" column="emp_post"/>
+        <result property="status" column="status"/>
+        <association property="section" javaType="com.wpx.pojo.EmpSection">
+            <id property="section_id" column="section_id"/>
+            <result property="section_name" column="section_name"/>
+        </association>
+
+    </resultMap>
+
+    <select id="selectAllEmployees" resultMap="EmpAndSection">
+        select * from employees e
+        inner join emp_section s
+        on e.emp_section=s.section_id
+        where status=1
+        limit ${(page-1)*rows},#{rows}
+    </select>
+    <select id="selectAllEmployees2" resultMap="EmpAndSection">
+        select * from employees e
+        inner join emp_section s
+        on e.emp_section=s.section_id
+    </select>
+
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(*) from employees
+        where status=1
+    </select>
+    <select id="selectSexCount" resultType="java.lang.Integer">
+        select count(*),emp_section from employees
+        where status=1 and emp_sex=#{sex}
+        group by emp_section
+        order by emp_section
+    </select>
+
+
+    <insert id="insEmployees" parameterType="com.wpx.pojo.Employees">
+        insert into employees(emp_id,emp_name ,emp_age ,emp_sex ,
+        emp_image ,emp_section ,emp_post ,status)
+        values(#{id,jdbcType=VARCHAR},#{empName,jdbcType=VARCHAR},#{empAge,jdbcType=VARCHAR},
+        #{empSex,jdbcType=VARCHAR},#{empImage,jdbcType=VARCHAR},#{empSection,jdbcType=VARCHAR},
+        #{empPost,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR})
+    </insert>
+
+
+    <update id="updateEmployees" parameterType="com.wpx.pojo.Employees">
+        update employees
+        <set>
+            <if test="empName != null">
+                emp_name = #{empName,jdbcType=VARCHAR},
+            </if>
+            <if test="empAge != null">
+                emp_age = #{empAge,jdbcType=VARCHAR},
+            </if>
+            <if test="empSex != null">
+                emp_sex = #{empSex,jdbcType=VARCHAR},
+            </if>
+            <if test="empImage != null">
+                emp_image = #{empImage,jdbcType=VARCHAR},
+            </if>
+            <if test="empSection != null">
+                emp_section = #{empSection,jdbcType=VARCHAR},
+            </if>
+            <if test="empPost != null">
+                emp_post = #{empPost,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where emp_id = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+</mapper>

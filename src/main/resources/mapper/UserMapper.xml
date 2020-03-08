@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 
+	namespace: 指定当前mapper.xml管理的接口 全限定名
+	注意：一个mapper.xml只能管理一个接口
+-->
+<mapper namespace="com.wpx.mapper.UserMapper">
+    <sql id="base_common">
+      id,username,password,age,sex,realname
+    </sql>
+
+    <select id="selectAllUser" parameterType="java.lang.Integer" resultType="com.wpx.pojo.User">
+        select
+        <include refid="base_common"/>
+        from user limit ${(page-1)*rows},#{rows}
+    </select>
+
+    <select id="selectUser"  resultType="com.wpx.pojo.User">
+        select * from user
+        where username=#{username} and password=#{password}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(*) from user
+    </select>
+
+    <insert id="insUser" parameterType="com.wpx.pojo.User">
+        insert into user(id,username,password,age,sex,realname)
+        values(#{id,jdbcType=VARCHAR},#{username,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{age,jdbcType=VARCHAR},#{sex,jdbcType=VARCHAR},#{realname,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateUser" parameterType="com.wpx.pojo.User">
+        update user
+        <set>
+            <if test="username != null">
+                username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="age != null">
+                age = #{age,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="realname != null">
+                realname = #{realname,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="delUser" parameterType="java.lang.String">
+        delete from user where id=#{id}
+    </delete>
+
+
+</mapper>
