@@ -60,10 +60,9 @@ public class EmployeesContruller {
         Map<String,String> map=new HashMap<String,String>();
         if("add".equals(oper)){
             System.out.println("添加的信息："+employees);
-            String sectionId = SectionService.selectBySectionID(employees.getSection().getSection_name());
             employees.setId(UUID.randomUUID().toString());
             employees.setStatus("1");
-            employees.setEmpSection(sectionId);
+            employees.setEmpSection(employees.getSection().getSection_name());
             System.out.println(employees);
             employeesService.insEmployees(employees);
             map.put("id",employees.getId());

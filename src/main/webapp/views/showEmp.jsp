@@ -141,10 +141,12 @@
                         index: 'section',
                         align: "center",
                         editable: true,
+                        edittype: "select",
+                        editoptions: {value: "1:科研部;2:人事部;3:财务部"}
+                    }
                         /*formatter: function (cellvalue, options, rowObject) {
                             return "";
                         }*/
-                    }
 
                 ],
                 styleUI: "Bootstrap",//开启Bootstrap风格
