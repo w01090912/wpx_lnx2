@@ -45,21 +45,43 @@
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
     $.post("${app}/emp/echartsEmp", function (data) {
-        console.log(data);
-        myChart.setOption({
-            series: [{
-                name: '男',
-                type: 'bar',
-                data: data.men
-            },
-                {
-                    name: '女',
-                    type: 'bar',
-                    data: data.woMen
-                }]
-        })
-    }, "json");
 
+    }, "json");
+    function ajaxLongConn(){
+        $.ajax({
+            type : "POST",
+            timeout :50000,//单次超时长连接时间为5秒
+            url : "${app}/emp/echartsEmp",
+            dataType : "JSON", //返回数据形式为json
+            success : function(result) {
+                //请求成功不递归，整个web生命周期仅会成功一次
+                console.log(result);
+                var data = result.poll_report;
+                //setTimeout('alert("12465")',5000);
+                myChart.setOption({
+                    series: [{
+                        name: '男',
+                        type: 'bar',
+                        data: result.men
+                    },
+                        {
+                            name: '女',
+                            type: 'bar',
+                            data: result.woMen
+                        }]
+                })
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if (textStatus == "timeout") { // 请求超时
+                    ajaxLongConn(); // 递归调用
+                    // 其他错误，如网络错误等
+                } else {
+                    ajaxLongConn();
+                }
+            },
+        });
+    }
+    window.setInterval(ajaxLongConn(),3000);
 
 
 

@@ -9,6 +9,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,11 +42,11 @@ public class EmployeesContruller {
 
     @RequestMapping("/show")
     @ResponseBody
-    public Map<String , Object> showEmpAndSection(Integer page,Integer rows){
-        System.out.println("展示数据的action,page: " +page +" rows: "+rows);
-        List<Employees> data = employeesService.selectAllEmployees(page,rows);// page页下的rows条数据
+    public Map<String, Object> showEmpAndSection(Integer page, Integer rows) {
+        System.out.println("展示数据的action,page: " + page + " rows: " + rows);
+        List<Employees> data = employeesService.selectAllEmployees(page, rows);// page页下的rows条数据
         Integer records = employeesService.selectCount();//当前数据源下的总数据数
-        Integer total = records%rows!=0?(records/rows+1):records/rows;
+        Integer total = records % rows != 0 ? (records / rows + 1) : records / rows;
         System.out.println(data);
         System.out.println(total);
         System.out.println(records);
@@ -56,52 +57,52 @@ public class EmployeesContruller {
 
     @RequestMapping("/edit")
     @ResponseBody
-    public Map<String, String> edit(String oper, Employees employees){
-        Map<String,String> map=new HashMap<String,String>();
-        if("add".equals(oper)){
-            System.out.println("添加的信息："+employees);
+    public Map<String, String> edit(String oper, Employees employees) {
+        Map<String, String> map = new HashMap<String, String>();
+        if ("add".equals(oper)) {
+            System.out.println("添加的信息：" + employees);
             employees.setId(UUID.randomUUID().toString());
             employees.setStatus("1");
             employees.setEmpSection(employees.getSection().getSection_name());
             System.out.println(employees);
             employeesService.insEmployees(employees);
-            map.put("id",employees.getId());
+            map.put("id", employees.getId());
 
-        }else if("del".equals(oper)){
+        } else if ("del".equals(oper)) {
             employees.setStatus("0");
-            System.out.println("删除的ID："+employees.getId());
+            System.out.println("删除的ID：" + employees.getId());
             employeesService.updateEmployees(employees);
             System.out.println("实现删除");
-        }else{
+        } else {
             System.out.println(employees);
             employeesService.updateEmployees(employees);
             System.out.println("数据修改成功");
-            map.put("id",employees.getId());
+            map.put("id", employees.getId());
         }
-        map.put("status","ok");
+        map.put("status", "ok");
         return map;
     }
 
 
     @RequestMapping("/upload")
-    public void update(String id, MultipartFile empImage , HttpSession session) throws IOException {
-        System.out.println("进入文件上传file："+empImage);
-        System.out.println("进入文件上传id："+id);
+    public void update(String id, MultipartFile empImage, HttpSession session) throws IOException {
+        System.out.println("进入文件上传file：" + empImage);
+        System.out.println("进入文件上传id：" + id);
         //获取要上传的文件夹
         String files = session.getServletContext().getRealPath("static/img");
 
         //上传文件
-        empImage.transferTo(new File(files,empImage.getOriginalFilename()));
+        empImage.transferTo(new File(files, empImage.getOriginalFilename()));
         //修改数据库中empImage的src
         Employees employees = new Employees();
         employees.setId(id);
-        System.out.println("上传文件的文件名："+empImage.getOriginalFilename());
+        System.out.println("上传文件的文件名：" + empImage.getOriginalFilename());
         employees.setEmpImage(empImage.getOriginalFilename());
         employeesService.updateEmployees(employees);
     }
 
     @RequestMapping("/download")
-    public void poiHSSFWB(HttpServletRequest request, HttpServletResponse response){
+    public void poiHSSFWB(HttpServletRequest request, HttpServletResponse response) {
         List<Employees> employees = employeesService.selectAllEmployees2();
 
         HSSFWorkbook wb = new HSSFWorkbook(); //创建excel对象
@@ -153,7 +154,6 @@ public class EmployeesContruller {
         cellStyle3.setBorderRight(BorderStyle.THIN);//右边框
 
 
-
         //创建第一行  标题
         HSSFRow row1 = sheet.createRow(0);
         //创建第二行  表头
@@ -162,15 +162,15 @@ public class EmployeesContruller {
 
         //合并单元格CellRangeAddress构造参数依次表示起始行，截至行，起始列， 截至列
 
-        CellRangeAddress cellRangeAddress =new CellRangeAddress(0,0,0,5);
+        CellRangeAddress cellRangeAddress = new CellRangeAddress(0, 0, 0, 5);
 
         sheet.addMergedRegion(cellRangeAddress);
         //单元格赋值
 
         //设置行高
 
-        row1.setHeight((short)(30*20));
-        row2.setHeight((short)(30*18));
+        row1.setHeight((short) (30 * 20));
+        row2.setHeight((short) (30 * 18));
 
         row1.createCell(0).setCellValue("北京***科技有限公司职员信息表");
 
@@ -190,8 +190,8 @@ public class EmployeesContruller {
         //创建第三行  内容
         for (int i = 0; i < employees.size(); i++) {
 
-            HSSFRow row3 = sheet.createRow(i+2);
-            row3.setHeight((short)(30*16));
+            HSSFRow row3 = sheet.createRow(i + 2);
+            row3.setHeight((short) (30 * 16));
             //第三行赋值
             row3.createCell(0).setCellValue(employees.get(i).getId());  //ID
             row3.createCell(1).setCellValue(employees.get(i).getEmpName());  //name
@@ -199,7 +199,7 @@ public class EmployeesContruller {
             row3.createCell(3).setCellValue(employees.get(i).getEmpSex());  //sex
             row3.createCell(4).setCellValue(employees.get(i).getEmpPost());  //职位
             row3.createCell(5).setCellValue(employees.get(i).getSection().getSection_name());  //部门名称
-            for (int j = 0; j <s.length ; j++) {
+            for (int j = 0; j < s.length; j++) {
                 row3.getCell(j).setCellStyle(cellStyle3);
             }
         }
@@ -209,9 +209,9 @@ public class EmployeesContruller {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String time = df.format(date);
 
-            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(time+"北京***科技有限公司职员信息表", "UTF-8")+".xls");
+            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(time + "北京***科技有限公司职员信息表", "UTF-8") + ".xls");
 
-            OutputStream outputStream=response.getOutputStream();
+            OutputStream outputStream = response.getOutputStream();
 
             wb.write(outputStream);
 
@@ -227,12 +227,13 @@ public class EmployeesContruller {
     //所有用户信息
     @RequestMapping("/echartsEmp")
     @ResponseBody
-    public Map<String,List<Integer>> optionUserCount(){
+    @Scheduled(fixedDelay = 5 * 1000)  //第一个任务完成后五秒进行资源调度
+    public Map<String, List<Integer>> optionUserCount() {
         BaseNorms baseNorms = new BaseNorms();
         List<Integer> men = employeesService.selectSexCount("男");
         List<Integer> woMen = employeesService.selectSexCount("女");
 
-        return baseNorms.setEchartsResult(men,woMen);
+       return baseNorms.setEchartsResult(men, woMen);
     }
 
 
