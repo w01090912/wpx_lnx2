@@ -227,7 +227,7 @@ public class EmployeesContruller {
     //所有用户信息
     @RequestMapping("/echartsEmp")
     @ResponseBody
-    @Scheduled(fixedDelay = 5 * 1000)  //第一个任务完成后五秒进行资源调度
+    //@Scheduled(fixedDelay = 5 * 1000)  //第一个任务完成后五秒进行资源调度
     public Map<String, List<Integer>> optionUserCount() {
         BaseNorms baseNorms = new BaseNorms();
         List<Integer> men = employeesService.selectSexCount("男");
