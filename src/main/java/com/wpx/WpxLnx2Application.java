@@ -16,7 +16,7 @@ import javax.servlet.MultipartConfigElement;
 
 @SpringBootApplication
 @MapperScan("com.wpx.mapper")
-@EnableScheduling  //开启定时任务支持
+//@EnableScheduling  //开启定时任务支持
 public class WpxLnx2Application {
 
     public static void main(String[] args) {
